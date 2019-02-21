@@ -1,5 +1,7 @@
 module.exports = {
-  setupFilesAfterEnv: [
-    '<rootDir>/jest.setup.js',
-  ],
+  setupFilesAfterEnv: ['jest-enzyme'],
+  testEnvironment: 'enzyme',
+  testEnvironmentOptions: {
+    enzymeAdapter: 'react16',
+  },
 };

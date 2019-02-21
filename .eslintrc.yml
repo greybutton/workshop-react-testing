@@ -2,6 +2,7 @@
 
 extends:
   - airbnb
+  - "jest-enzyme"
   - "plugin:jest/recommended"
   - "plugin:react/recommended"
 
