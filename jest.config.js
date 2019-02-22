@@ -4,4 +4,7 @@ module.exports = {
   testEnvironmentOptions: {
     enzymeAdapter: 'react16',
   },
+  moduleNameMapper: {
+    '\\.css$': 'identity-obj-proxy',
+  },
 };
