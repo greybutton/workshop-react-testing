@@ -17,8 +17,8 @@ describe('<Tabs />', () => {
 
   test('click on active tab', () => {
     const wrapper = mount(<MyTabs />);
-    const tabDisabled = wrapper.find(datatest).at(2);
-    tabDisabled.simulate('click');
+    const tab = wrapper.find(datatest).at(2);
+    tab.simulate('click');
     expect(wrapper.render()).toMatchSnapshot();
   });
 });
