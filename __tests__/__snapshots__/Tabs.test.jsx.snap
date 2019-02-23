@@ -25,7 +25,7 @@ exports[`<Tabs /> click on active tab 1`] = `
       aria-disabled="true"
       aria-selected="false"
       class="react-tabs__tab react-tabs__tab--disabled"
-      data-test="tab-disabled"
+      data-test="tab-2"
       id="react-tabs-14"
       role="tab"
     >
@@ -95,7 +95,7 @@ exports[`<Tabs /> click on disabled 1`] = `
       aria-disabled="true"
       aria-selected="false"
       class="react-tabs__tab react-tabs__tab--disabled"
-      data-test="tab-disabled"
+      data-test="tab-2"
       id="react-tabs-8"
       role="tab"
     >
@@ -164,7 +164,7 @@ exports[`<Tabs /> render 1`] = `
       aria-disabled="true"
       aria-selected="false"
       class="react-tabs__tab react-tabs__tab--disabled"
-      data-test="tab-disabled"
+      data-test="tab-2"
       id="react-tabs-2"
       role="tab"
     >

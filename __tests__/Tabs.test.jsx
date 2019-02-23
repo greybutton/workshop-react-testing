@@ -8,14 +8,14 @@ describe('<Tabs />', () => {
 
   test('click on disabled', () => {
     const wrapper = mount(<MyTabs />);
-    const tabDisabled = wrapper.find('Tab[data-test="tab-disabled"]');
+    const tabDisabled = wrapper.find('li[data-test="tab-2"]');
     tabDisabled.simulate('click');
     expect(wrapper.render()).toMatchSnapshot();
   });
 
   test('click on active tab', () => {
     const wrapper = mount(<MyTabs />);
-    const tabDisabled = wrapper.find('Tab[data-test="tab-3"]');
+    const tabDisabled = wrapper.find('li[data-test="tab-3"]');
     tabDisabled.simulate('click');
     expect(wrapper.render()).toMatchSnapshot();
   });

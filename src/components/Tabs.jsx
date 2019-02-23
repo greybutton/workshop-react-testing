@@ -8,7 +8,7 @@ const MyTabs = () => (
   <Tabs>
     <TabList>
       <Tab data-test="tab-1">Title 1</Tab>
-      <Tab disabled data-test="tab-disabled">Title 2 (disabled)</Tab>
+      <Tab disabled data-test="tab-2">Title 2 (disabled)</Tab>
       <Tab data-test="tab-3">Title 3</Tab>
     </TabList>
 
