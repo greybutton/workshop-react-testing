@@ -133,7 +133,7 @@ class Main extends React.Component {
         </button>
         {isFormOpen && this.renderForm()}
         <Tabs selectedIndex={tabIndex} onSelect={this.handleSelectTab}>
-          <TabList>
+          <TabList data-test="tabs-box">
             {tabs.map(({ id, title, attrs }) => (
               <Tab key={id} data-test="tab" {...attrs}>
                 {title}

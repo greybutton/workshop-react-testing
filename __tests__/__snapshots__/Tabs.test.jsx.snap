@@ -20,6 +20,7 @@ exports[`Tabs click on disabled tab 1`] = `
   >
     <ul
       class="react-tabs__tab-list"
+      data-test="tabs-box"
       role="tablist"
     >
       <li
@@ -122,6 +123,7 @@ exports[`Tabs click on normal tab 1`] = `
   >
     <ul
       class="react-tabs__tab-list"
+      data-test="tabs-box"
       role="tablist"
     >
       <li
@@ -224,6 +226,7 @@ exports[`Tabs render 1`] = `
   >
     <ul
       class="react-tabs__tab-list"
+      data-test="tabs-box"
       role="tablist"
     >
       <li

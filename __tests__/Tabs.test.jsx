@@ -36,10 +36,12 @@ describe('Tabs without snapshots', () => {
 
   test('click on normal tab', () => {
     const wrapper = mount(<App />);
-    expect(wrapper).toIncludeText('Any content 1');
     const tab = wrapper.find(datatest).at(2);
     tab.simulate('click');
-    expect(wrapper).toIncludeText('Any content 3');
+    const tabActive = wrapper.find(datatest).at(0);
+    const tabNotActive = wrapper.find(datatest).at(2);
+    expect(tabActive).toHaveProp('aria-selected', 'false');
+    expect(tabNotActive).toHaveProp('aria-selected', 'true');
   });
 });
 
@@ -56,8 +58,11 @@ describe('Tabs CRUD', () => {
     const content = 'Content Test';
     inputTitle.simulate('change', { target: { value: title } });
     inputContent.simulate('change', { target: { value: content } });
+    const tabsBeforeCreate = wrapper.find('ul[data-test="tabs-box"]');
+    expect(tabsBeforeCreate).toContainMatchingElements(3, datatest);
     saveButton.simulate('click');
-    expect(wrapper).toIncludeText(content);
+    const tabsAfterCreate = wrapper.find('ul[data-test="tabs-box"]');
+    expect(tabsAfterCreate).toContainMatchingElements(4, datatest);
   });
 
   test('create cancel', () => {
@@ -73,7 +78,10 @@ describe('Tabs CRUD', () => {
   test('delete', () => {
     const wrapper = mount(<App />);
     const removeButtons = wrapper.find('[data-test="button-remove"]');
+    const tabsBeforeDelete = wrapper.find('ul[data-test="tabs-box"]');
+    expect(tabsBeforeDelete).toContainMatchingElements(3, datatest);
     removeButtons.at(2).simulate('click');
-    expect(wrapper).not.toIncludeText('Title 3');
+    const tabsAfterDelete = wrapper.find('ul[data-test="tabs-box"]');
+    expect(tabsAfterDelete).toContainMatchingElements(2, datatest);
   });
 });
