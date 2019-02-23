@@ -7,9 +7,9 @@ import 'react-tabs/style/react-tabs.css';
 const MyTabs = () => (
   <Tabs>
     <TabList>
-      <Tab data-test="tab-1">Title 1</Tab>
-      <Tab disabled data-test="tab-2">Title 2 (disabled)</Tab>
-      <Tab data-test="tab-3">Title 3</Tab>
+      <Tab data-test="tab-0">Title 1</Tab>
+      <Tab disabled data-test="tab-1">Title 2 (disabled)</Tab>
+      <Tab data-test="tab-2">Title 3</Tab>
     </TabList>
 
     <TabPanel>
