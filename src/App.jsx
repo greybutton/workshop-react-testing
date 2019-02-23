@@ -1,11 +1,11 @@
 import '@babel/polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import Main from './components/Main';
 
 export default (gon) => {
   ReactDOM.render(
-    <App gon={gon} />,
+    <Main gon={gon} />,
     document.getElementById('root'),
   );
 };
