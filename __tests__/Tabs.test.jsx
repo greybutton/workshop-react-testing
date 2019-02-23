@@ -3,7 +3,21 @@ import App from '../src/components/Main';
 
 ReactLogState.logAll(); // eslint-disable-line
 
-const datatest = 'li[data-test^="tab"]';
+const dataTab = 'li[data-test="tab"]';
+const dataForm = '[data-test="form"]';
+
+const buildSelector = wrapper => ({
+  tabs: () => wrapper.find(dataTab),
+  tabAt: i => wrapper.find(dataTab).at(i),
+  tabsBox: () => wrapper.find('ul[data-test="tabs-box"]'),
+  form: () => wrapper.find(dataForm),
+  titleInputTab: () => wrapper.find('[data-test="input-title"]'),
+  contentInputTab: () => wrapper.find('[data-test="input-content"]'),
+  addTabButton: () => wrapper.find('[data-test="button-add"]'),
+  saveTabButton: () => wrapper.find('[data-test="button-submit"]'),
+  cancelTabButton: () => wrapper.find('[data-test="button-cancel"]'),
+  removeTabButton: () => wrapper.find('[data-test="button-remove"]'),
+});
 
 describe('Tabs', () => {
   test('render', () => {
@@ -13,14 +27,16 @@ describe('Tabs', () => {
 
   test('click on disabled tab', () => {
     const wrapper = mount(<App />);
-    const tabDisabled = wrapper.find(datatest).at(1);
+    const s = buildSelector(wrapper);
+    const tabDisabled = s.tabAt(1);
     tabDisabled.simulate('click');
     expect(wrapper.render()).toMatchSnapshot();
   });
 
   test('click on normal tab', () => {
     const wrapper = mount(<App />);
-    const tab = wrapper.find(datatest).at(2);
+    const s = buildSelector(wrapper);
+    const tab = s.tabAt(2);
     tab.simulate('click');
     expect(wrapper.render()).toMatchSnapshot();
   });
@@ -29,17 +45,20 @@ describe('Tabs', () => {
 describe('Tabs without snapshots', () => {
   test('click on disabled tab', () => {
     const wrapper = mount(<App />);
-    const tabDisabled = wrapper.find(datatest).at(1);
+    const s = buildSelector(wrapper);
+    const tabDisabled = s.tabAt(1);
     tabDisabled.simulate('click');
-    expect(wrapper.find(datatest).at(1)).toHaveProp('aria-disabled', 'true');
+    const sameTabDisabled = s.tabAt(1);
+    expect(sameTabDisabled).toHaveProp('aria-disabled', 'true');
   });
 
   test('click on normal tab', () => {
     const wrapper = mount(<App />);
-    const tab = wrapper.find(datatest).at(2);
+    const s = buildSelector(wrapper);
+    const tab = s.tabAt(2);
     tab.simulate('click');
-    const tabActive = wrapper.find(datatest).at(0);
-    const tabNotActive = wrapper.find(datatest).at(2);
+    const tabActive = s.tabAt(0);
+    const tabNotActive = s.tabAt(2);
     expect(tabActive).toHaveProp('aria-selected', 'false');
     expect(tabNotActive).toHaveProp('aria-selected', 'true');
   });
@@ -48,40 +67,43 @@ describe('Tabs without snapshots', () => {
 describe('Tabs CRUD', () => {
   test('create', () => {
     const wrapper = mount(<App />);
-    const addButton = wrapper.find('[data-test="button-add"]');
+    const s = buildSelector(wrapper);
+    const addButton = s.addTabButton();
     addButton.simulate('click');
-    expect(wrapper).toContainMatchingElement('[data-test="form"]');
-    const inputTitle = wrapper.find('[data-test="input-title"]');
-    const inputContent = wrapper.find('[data-test="input-content"]');
-    const saveButton = wrapper.find('[data-test="button-submit"]');
+    expect(wrapper).toContainMatchingElement(dataForm);
+    const inputTitle = s.titleInputTab();
+    const inputContent = s.contentInputTab();
+    const saveButton = s.saveTabButton();
     const title = 'Title Test';
     const content = 'Content Test';
     inputTitle.simulate('change', { target: { value: title } });
     inputContent.simulate('change', { target: { value: content } });
-    const tabsBeforeCreate = wrapper.find('ul[data-test="tabs-box"]');
-    expect(tabsBeforeCreate).toContainMatchingElements(3, datatest);
+    const tabsBeforeCreate = s.tabsBox();
+    expect(tabsBeforeCreate).toContainMatchingElements(3, dataTab);
     saveButton.simulate('click');
-    const tabsAfterCreate = wrapper.find('ul[data-test="tabs-box"]');
-    expect(tabsAfterCreate).toContainMatchingElements(4, datatest);
+    const tabsAfterCreate = s.tabsBox();
+    expect(tabsAfterCreate).toContainMatchingElements(4, dataTab);
   });
 
   test('create cancel', () => {
     const wrapper = mount(<App />);
-    const addButton = wrapper.find('[data-test="button-add"]');
+    const s = buildSelector(wrapper);
+    const addButton = s.addTabButton();
     addButton.simulate('click');
-    expect(wrapper).toContainMatchingElement('[data-test="form"]');
-    const cancelButton = wrapper.find('[data-test="button-cancel"]');
+    expect(wrapper).toContainMatchingElement(dataForm);
+    const cancelButton = s.cancelTabButton();
     cancelButton.simulate('click');
-    expect(wrapper).not.toContainMatchingElement('[data-test="form"]');
+    expect(wrapper).not.toContainMatchingElement(dataForm);
   });
 
   test('delete', () => {
     const wrapper = mount(<App />);
-    const removeButtons = wrapper.find('[data-test="button-remove"]');
-    const tabsBeforeDelete = wrapper.find('ul[data-test="tabs-box"]');
-    expect(tabsBeforeDelete).toContainMatchingElements(3, datatest);
+    const s = buildSelector(wrapper);
+    const removeButtons = s.removeTabButton();
+    const tabsBeforeDelete = s.tabsBox();
+    expect(tabsBeforeDelete).toContainMatchingElements(3, dataTab);
     removeButtons.at(2).simulate('click');
-    const tabsAfterDelete = wrapper.find('ul[data-test="tabs-box"]');
-    expect(tabsAfterDelete).toContainMatchingElements(2, datatest);
+    const tabsAfterDelete = s.tabsBox();
+    expect(tabsAfterDelete).toContainMatchingElements(2, dataTab);
   });
 });
