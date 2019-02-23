@@ -107,3 +107,28 @@ describe('Tabs CRUD', () => {
     expect(tabsAfterDelete).toContainMatchingElements(2, dataTab);
   });
 });
+
+describe('Save active tabs to cookies', () => {
+  const cookiesStub = () => {
+    const cookie = {};
+    return {
+      set: (field, value) => { cookie[field] = value; },
+      get: field => cookie[field],
+    };
+  };
+  const cookie = cookiesStub();
+
+  test('set cookie', () => {
+    const wrapper = mount(<App cookie={cookie} />);
+    const s = buildSelector(wrapper);
+    const tab = s.tabAt(2);
+    tab.simulate('click');
+  });
+
+  test('get cookie', () => {
+    const wrapper = mount(<App cookie={cookie} />);
+    const s = buildSelector(wrapper);
+    const tab = s.tabAt(2);
+    expect(tab).toHaveProp('aria-selected', 'true');
+  });
+});

@@ -24,7 +24,32 @@ class Main extends React.Component {
     },
   }
 
-  handleSelectTab = tabIndex => this.setState({ tabIndex });
+  componentDidMount() {
+    this.getActiveTabCookie();
+  }
+
+  setActiveTabToCookie = (index) => {
+    const { cookie } = this.props;
+    if (!cookie) {
+      return;
+    }
+    cookie.set('tabIndex', index);
+  }
+
+  getActiveTabCookie = () => {
+    const { cookie } = this.props;
+    if (!cookie) {
+      return;
+    }
+    const index = Number(cookie.get('tabIndex'));
+    const tabIndex = index <= 2 ? index : 0;
+    this.setState({ tabIndex });
+  }
+
+  handleSelectTab = (tabIndex) => {
+    this.setState({ tabIndex });
+    this.setActiveTabToCookie(tabIndex);
+  };
 
   handleOpenNewForm = () => this.setState(prevState => ({ ...prevState, form: { state: 'new' } }));
 
@@ -63,6 +88,7 @@ class Main extends React.Component {
     const activeTab = newTabs.length - 1;
     this.setState({ tabs: newTabs, form: resetForm, tabIndex: activeTab });
     Main.id += 1;
+    this.setActiveTabToCookie(activeTab);
   }
 
   renderForm = () => (
