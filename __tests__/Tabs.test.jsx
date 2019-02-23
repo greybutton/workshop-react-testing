@@ -29,10 +29,11 @@ describe('Tabs', () => {
 describe('Tabs without snapshots', () => {
   test('click on disabled tab', () => {
     const wrapper = mount(<App />);
-    expect(wrapper).toIncludeText('Any content 1');
     const tabDisabled = wrapper.find(datatest).at(1);
     tabDisabled.simulate('click');
-    expect(wrapper).not.toIncludeText('Any content 2');
+    expect(wrapper.find(datatest).at(1)).toHaveProp('aria-disabled', 'true');
+    // expect(wrapper.find('[aria-disabled="true"]')).toExist();
+    // expect(wrapper).not.toIncludeText('Any content 2');
   });
 
   test('click on normal tab', () => {
