@@ -32,8 +32,6 @@ describe('Tabs without snapshots', () => {
     const tabDisabled = wrapper.find(datatest).at(1);
     tabDisabled.simulate('click');
     expect(wrapper.find(datatest).at(1)).toHaveProp('aria-disabled', 'true');
-    // expect(wrapper.find('[aria-disabled="true"]')).toExist();
-    // expect(wrapper).not.toIncludeText('Any content 2');
   });
 
   test('click on normal tab', () => {
