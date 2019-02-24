@@ -1,6 +1,13 @@
+import { promises as fsPromises } from 'fs';
+import nock from 'nock';
+import axios from 'axios';
+import httpAdapter from 'axios/lib/adapters/http';
+import delay from 'delay';
 import 'react-log-state';
 import App from '../src/components/Main';
+import parseRSS from '../lib/parserRSS';
 
+axios.defaults.adapter = httpAdapter;
 ReactLogState.logAll(); // eslint-disable-line
 
 const dataTab = 'li[data-test="tab"]';
@@ -13,34 +20,17 @@ const buildSelector = wrapper => ({
   form: () => wrapper.find(dataForm),
   titleInputTab: () => wrapper.find('[data-test="input-title"]'),
   contentInputTab: () => wrapper.find('[data-test="input-content"]'),
-  addTabButton: () => wrapper.find('[data-test="button-add"]'),
+  addTabButton: () => wrapper.find('[data-test="button-add"]').at(0),
   saveTabButton: () => wrapper.find('[data-test="button-submit"]'),
   cancelTabButton: () => wrapper.find('[data-test="button-cancel"]'),
   removeTabButton: () => wrapper.find('[data-test="button-remove"]'),
+  linkInputRSS: () => wrapper.find('[data-test="input-link"]'),
+  addButtonRSS: () => wrapper.find('[data-test="button-add"]').at(1),
+  saveButtonRSS: () => wrapper.find('[data-test="button-submit"]'),
+  cancelButtonRSS: () => wrapper.find('[data-test="button-cancel"]'),
+  removeButtonRSS: () => wrapper.find('[data-test="button-remove"]'),
 });
 
-describe('Tabs', () => {
-  test('render', () => {
-    const wrapper = mount(<App />);
-    expect(wrapper.render()).toMatchSnapshot();
-  });
-
-  test('click on disabled tab', () => {
-    const wrapper = mount(<App />);
-    const s = buildSelector(wrapper);
-    const tabDisabled = s.tabAt(1);
-    tabDisabled.simulate('click');
-    expect(wrapper.render()).toMatchSnapshot();
-  });
-
-  test('click on normal tab', () => {
-    const wrapper = mount(<App />);
-    const s = buildSelector(wrapper);
-    const tab = s.tabAt(2);
-    tab.simulate('click');
-    expect(wrapper.render()).toMatchSnapshot();
-  });
-});
 
 describe('Tabs without snapshots', () => {
   test('click on disabled tab', () => {
@@ -130,5 +120,33 @@ describe('Save active tabs to cookies', () => {
     const s = buildSelector(wrapper);
     const tab = s.tabAt(2);
     expect(tab).toHaveProp('aria-selected', 'true');
+  });
+});
+
+describe('RSS', () => {
+  test('save rss tab', async () => {
+    const fixturesPathRSS = '__tests__/__fixtures__/rss.xml';
+    const xml = await fsPromises.readFile(fixturesPathRSS, { encoding: 'utf8' });
+    const { title, description } = parseRSS(xml);
+    const host = 'https://cors-anywhere.herokuapp.com/';
+    const url = 'test';
+    nock(host)
+      .get(`/${url}`)
+      .reply(200, xml);
+    const wrapper = mount(<App />);
+    const s = buildSelector(wrapper);
+    s.addButtonRSS().simulate('click');
+    const inputLink = s.linkInputRSS();
+    inputLink.simulate('change', { target: { value: url } });
+    const tabsBeforeSave = s.tabsBox();
+    expect(tabsBeforeSave).toContainMatchingElements(3, dataTab);
+    const saveButton = s.saveButtonRSS();
+    saveButton.simulate('click');
+    await delay(100);
+    wrapper.update();
+    const tabsAfterSave = s.tabsBox();
+    expect(tabsAfterSave).toContainMatchingElements(4, dataTab);
+    expect(wrapper).toIncludeText(title);
+    expect(wrapper).toIncludeText(description);
   });
 });

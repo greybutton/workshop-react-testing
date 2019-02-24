@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Последние посты в блоге Хекслета</title>
+    <description>Обучение, саморазвитие и истории успеха</description>
+    <link>https://ru.hexlet.io/</link>
+    <webMaster>info@hexlet.io</webMaster>
+    <item>
+      <title>Вокруг да около или признание самому себе</title>
+      <guid isPermaLink="false">249</guid>
+      <link>https://ru.hexlet.io/blog/posts/vokrug-da-okolo-ili-priznanie-samomu-sebe</link>
+      <description>Сколько себя помню, мне всегда нравилась техника. Нравилось настраивать её, разбирать и смотреть, как она устроена. В пять лет разбирал магнитофон, в шесть — видеомагнитофон, в семь — приставку (интересно, кто-нибудь ещё помнит Денди?). Но так получилось, что компьютер в доме появился только в пятнадцать лет, очень быстро научился переустанавливать операционную систему, устанавливать ПО, менять железо, но вот с написанием кода дело не задалось. В школе программирование преподавали скучно, образовательные курсы были неинтересными. А потом я нашёл Hexlet.
+</description>
+      <pubDate>Wed, 20 Feb 2019 16:15:07 +0800</pubDate>
+    </item>
+    <item>
+      <title>Моя первая история</title>
+      <guid isPermaLink="false">248</guid>
+      <link>https://ru.hexlet.io/blog/posts/first-story-student_hexlet</link>
+      <description>Можно ли в 30 лет стать тем самым сыном маминой подруги, у которого всё получается? Наш студент Антон начинает первые шаги к профессии JS-frontender и планирует закончить теорию к концу апреля.
+</description>
+      <pubDate>Mon, 18 Feb 2019 22:17:24 +0800</pubDate>
+    </item>
+  </channel>
+</rss>

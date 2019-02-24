@@ -3,6 +3,9 @@ import {
   Tab, Tabs, TabList, TabPanel,
 } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import axios from 'axios';
+import classNames from 'classnames';
+import parseRSS from '../../lib/parserRSS';
 
 
 class Main extends React.Component {
@@ -21,6 +24,10 @@ class Main extends React.Component {
       state: 'close',
       title: '',
       content: '',
+    },
+    formRSS: {
+      state: 'close',
+      link: '',
     },
   }
 
@@ -51,9 +58,17 @@ class Main extends React.Component {
     this.setActiveTabToCookie(tabIndex);
   };
 
-  handleOpenNewForm = () => this.setState(prevState => ({ ...prevState, form: { state: 'new' } }));
+  handleOpenNewForm = form => this.setState(prevState => ({ ...prevState, [form]: { state: 'new' } }));
 
-  handleCloseForm = () => this.setState(prevState => ({ ...prevState, form: { state: 'close' } }));
+  handleCloseForm = form => this.setState(prevState => ({ ...prevState, [form]: { state: 'close' } }));
+
+  handleOpenNewFormTab = () => this.handleOpenNewForm('form');
+
+  handleCloseFormTab = () => this.handleCloseForm('form');
+
+  handleOpenNewFormRSS = () => this.handleOpenNewForm('formRSS');
+
+  handleCloseFormRSS = () => this.handleCloseForm('formRSS');
 
   onChangeTitle = (e) => {
     const { target: { value } } = e;
@@ -63,6 +78,11 @@ class Main extends React.Component {
   onChangeContent = (e) => {
     const { target: { value } } = e;
     this.setState(prevState => ({ ...prevState, form: { ...prevState.form, content: value } }));
+  }
+
+  onChangeLinkRSS = (e) => {
+    const { target: { value } } = e;
+    this.setState(prevState => ({ ...prevState, formRSS: { ...prevState.formRSS, link: value } }));
   }
 
   handleRemoveTab = (id) => {
@@ -91,6 +111,34 @@ class Main extends React.Component {
     this.setActiveTabToCookie(activeTab);
   }
 
+  handleSaveRSS = async (e) => {
+    e.preventDefault();
+    const { formRSS: { link }, tabs } = this.state;
+    const getProxedURL = url => `https://cors-anywhere.herokuapp.com/${url}`;
+    try {
+      this.setState(prevState => ({ ...prevState, formRSS: { ...prevState.formRSS, state: 'loading' } }));
+      const { data } = await axios.get(getProxedURL(link));
+      const { title, description } = parseRSS(data);
+      const tab = {
+        id: Main.id,
+        title,
+        content: description,
+      };
+      const newTabs = [...tabs, tab];
+      const activeTab = newTabs.length - 1;
+      const resetForm = {
+        state: 'close',
+        link: '',
+      };
+      this.setState({ tabs: newTabs, formRSS: resetForm, tabIndex: activeTab });
+      Main.id += 1;
+      this.setActiveTabToCookie(activeTab);
+    } catch (err) {
+      this.setState(prevState => ({ ...prevState, formRSS: { ...prevState.formRSS, state: 'error' } }));
+      console.log(err);
+    }
+  }
+
   renderForm = () => (
     <form
       data-test="form"
@@ -107,6 +155,7 @@ class Main extends React.Component {
             name="title"
             aria-describedby="titleHelp"
             placeholder="Enter title"
+            autoFocus
           />
         </label>
       </div>
@@ -127,37 +176,113 @@ class Main extends React.Component {
         data-test="button-submit"
         onClick={this.handleSaveTab}
         type="submit"
-        className="btn btn-primary"
+        className="btn btn-primary mr-1 mb-1"
       >
         Submit
       </button>
       <button
         data-test="button-cancel"
-        onClick={this.handleCloseForm}
+        onClick={this.handleCloseFormTab}
         type="button"
-        className="btn btn-secondary"
+        className="btn btn-secondary mr-1 mb-1"
       >
         Cancel
       </button>
     </form>
   )
 
+  renderFormRSS = () => {
+    const { formRSS: { state } } = this.state;
+    const loading = state === 'loading';
+    const error = state === 'error';
+    const inputClasses = classNames({
+      'form-control': true,
+      'is-invalid': error,
+    });
+
+    return (
+      <form data-test="form">
+        <div className="form-group">
+          <label htmlFor="link">
+            RSS link
+            <input
+              data-test="input-link"
+              onChange={this.onChangeLinkRSS}
+              type="text"
+              className={inputClasses}
+              id="link"
+              name="link"
+              aria-describedby="linkHelp"
+              placeholder="Enter link"
+              disabled={loading}
+              autoFocus
+            />
+            {error && (
+              <div className="invalid-feedback">
+                Something went wrong. Please try again.
+              </div>
+            )}
+          </label>
+          {loading && (
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          )}
+        </div>
+        <button
+          data-test="button-submit"
+          onClick={this.handleSaveRSS}
+          type="submit"
+          className="btn btn-primary mr-1 mb-1"
+          disabled={loading}
+        >
+          Submit
+        </button>
+        <button
+          data-test="button-cancel"
+          onClick={this.handleCloseFormRSS}
+          type="button"
+          className="btn btn-secondary mr-1 mb-1"
+          disabled={loading}
+        >
+          Cancel
+        </button>
+      </form>
+    );
+  }
+
   render() {
-    const { tabIndex, tabs, form } = this.state;
+    const {
+      tabIndex, tabs, form, formRSS,
+    } = this.state;
     const isFormOpen = form.state === 'new';
+    const isFormRSSOpen = formRSS.state !== 'close';
 
     return (
       <div className="container">
         <h1>Hello</h1>
-        <button
-          data-test="button-add"
-          type="button"
-          onClick={this.handleOpenNewForm}
-          className="btn btn-primary"
-        >
-          Add tab
-        </button>
+        {!isFormOpen && !isFormRSSOpen && (
+          <button
+            data-test="button-add"
+            type="button"
+            onClick={this.handleOpenNewFormTab}
+            className="btn btn-primary mr-1 mb-1"
+          >
+            Add tab
+          </button>
+        )}
+        {!isFormRSSOpen && !isFormOpen && (
+          <button
+            data-test="button-add"
+            type="button"
+            onClick={this.handleOpenNewFormRSS}
+            className="btn btn-primary mr-1 mb-1"
+          >
+            Add RSS
+          </button>
+        )}
         {isFormOpen && this.renderForm()}
+        {isFormRSSOpen && this.renderFormRSS()}
         <Tabs selectedIndex={tabIndex} onSelect={this.handleSelectTab}>
           <TabList data-test="tabs-box">
             {tabs.map(({ id, title, attrs }) => (
