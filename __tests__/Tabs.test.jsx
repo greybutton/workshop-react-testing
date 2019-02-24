@@ -20,10 +20,10 @@ const buildSelector = wrapper => ({
   form: () => wrapper.find(dataForm),
   titleInputTab: () => wrapper.find('[data-test="input-title"]'),
   contentInputTab: () => wrapper.find('[data-test="input-content"]'),
-  addTabButton: () => wrapper.find('[data-test="button-add"]').at(0),
-  saveTabButton: () => wrapper.find('[data-test="button-submit"]'),
-  cancelTabButton: () => wrapper.find('[data-test="button-cancel"]'),
-  removeTabButton: () => wrapper.find('[data-test="button-remove"]'),
+  addButtonTab: () => wrapper.find('[data-test="button-add"]').at(0),
+  saveButtonTab: () => wrapper.find('[data-test="button-submit"]'),
+  cancelButtonTab: () => wrapper.find('[data-test="button-cancel"]'),
+  removeButtonsTab: () => wrapper.find('[data-test="button-remove"]'),
   linkInputRSS: () => wrapper.find('[data-test="input-link"]'),
   addButtonRSS: () => wrapper.find('[data-test="button-add"]').at(1),
   saveButtonRSS: () => wrapper.find('[data-test="button-submit"]'),
@@ -36,10 +36,10 @@ describe('Tabs without snapshots', () => {
   test('click on disabled tab', () => {
     const wrapper = mount(<App />);
     const s = buildSelector(wrapper);
-    const tabDisabled = s.tabAt(1);
-    tabDisabled.simulate('click');
-    const sameTabDisabled = s.tabAt(1);
-    expect(sameTabDisabled).toHaveProp('aria-disabled', 'true');
+    const disabledTab = s.tabAt(1);
+    disabledTab.simulate('click');
+    const sameDisabledTab = s.tabAt(1);
+    expect(sameDisabledTab).toHaveProp('aria-disabled', 'true');
   });
 
   test('click on normal tab', () => {
@@ -47,10 +47,10 @@ describe('Tabs without snapshots', () => {
     const s = buildSelector(wrapper);
     const tab = s.tabAt(2);
     tab.simulate('click');
-    const tabActive = s.tabAt(0);
-    const tabNotActive = s.tabAt(2);
-    expect(tabActive).toHaveProp('aria-selected', 'false');
-    expect(tabNotActive).toHaveProp('aria-selected', 'true');
+    const activeTab = s.tabAt(0);
+    const notActiveTab = s.tabAt(2);
+    expect(activeTab).toHaveProp('aria-selected', 'false');
+    expect(notActiveTab).toHaveProp('aria-selected', 'true');
   });
 });
 
@@ -58,12 +58,12 @@ describe('Tabs CRUD', () => {
   test('create', () => {
     const wrapper = mount(<App />);
     const s = buildSelector(wrapper);
-    const addButton = s.addTabButton();
+    const addButton = s.addButtonTab();
     addButton.simulate('click');
     expect(wrapper).toContainMatchingElement(dataForm);
     const inputTitle = s.titleInputTab();
     const inputContent = s.contentInputTab();
-    const saveButton = s.saveTabButton();
+    const saveButton = s.saveButtonTab();
     const title = 'Title Test';
     const content = 'Content Test';
     inputTitle.simulate('change', { target: { value: title } });
@@ -78,10 +78,10 @@ describe('Tabs CRUD', () => {
   test('create cancel', () => {
     const wrapper = mount(<App />);
     const s = buildSelector(wrapper);
-    const addButton = s.addTabButton();
+    const addButton = s.addButtonTab();
     addButton.simulate('click');
     expect(wrapper).toContainMatchingElement(dataForm);
-    const cancelButton = s.cancelTabButton();
+    const cancelButton = s.cancelButtonTab();
     cancelButton.simulate('click');
     expect(wrapper).not.toContainMatchingElement(dataForm);
   });
@@ -89,7 +89,7 @@ describe('Tabs CRUD', () => {
   test('delete', () => {
     const wrapper = mount(<App />);
     const s = buildSelector(wrapper);
-    const removeButtons = s.removeTabButton();
+    const removeButtons = s.removeButtonsTab();
     const tabsBeforeDelete = s.tabsBox();
     expect(tabsBeforeDelete).toContainMatchingElements(3, dataTab);
     removeButtons.at(2).simulate('click');
@@ -98,7 +98,7 @@ describe('Tabs CRUD', () => {
   });
 });
 
-describe('Save active tabs to cookies', () => {
+test('Save active tabs to cookies', () => {
   const cookiesStub = () => {
     const cookie = {};
     return {
@@ -108,19 +108,15 @@ describe('Save active tabs to cookies', () => {
   };
   const cookie = cookiesStub();
 
-  test('set cookie', () => {
-    const wrapper = mount(<App cookie={cookie} />);
-    const s = buildSelector(wrapper);
-    const tab = s.tabAt(2);
-    tab.simulate('click');
-  });
+  const wrapper = mount(<App cookie={cookie} />);
+  const s = buildSelector(wrapper);
+  const tab = s.tabAt(2);
+  tab.simulate('click');
 
-  test('get cookie', () => {
-    const wrapper = mount(<App cookie={cookie} />);
-    const s = buildSelector(wrapper);
-    const tab = s.tabAt(2);
-    expect(tab).toHaveProp('aria-selected', 'true');
-  });
+  const wrapper2 = mount(<App cookie={cookie} />);
+  const s2 = buildSelector(wrapper2);
+  const tab2 = s2.tabAt(2);
+  expect(tab2).toHaveProp('aria-selected', 'true');
 });
 
 describe('RSS', () => {
